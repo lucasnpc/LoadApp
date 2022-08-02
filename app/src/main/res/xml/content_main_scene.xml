@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/custom_button"
+            app:backgroundColor="@color/colorPrimaryDark" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@id/custom_button"
+            app:backgroundColor="@color/colorPrimaryDark" />
+    </ConstraintSet>
+
+    <Transition
+        app:constraintSetEnd="@id/end"
+        app:constraintSetStart="@+id/start"
+        app:duration="2000">
+        <OnClick
+            app:clickAction="toggle"
+            app:targetId="@id/custom_button" />
+
+        <KeyFrameSet>
+            <KeyAttribute app:motionTarget="@id/custom_button">
+                <CustomAttribute
+                    app:attributeName="backgroundColor"
+                    app:customColorValue="#004349" />
+            </KeyAttribute>
+        </KeyFrameSet>
+    </Transition>
+</MotionScene>

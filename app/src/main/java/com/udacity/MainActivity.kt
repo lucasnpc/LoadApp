@@ -9,8 +9,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
+import android.view.View
+import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import com.udacity.databinding.ActivityMainBinding
@@ -28,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
 
+    private var url = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -35,8 +38,11 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        binding.contentMain.customButton.setOnClickListener {
-//            download()
+        binding.contentMain.customButton.let { button ->
+            button.setOnClickListener {
+                button.buttonState = ButtonState.Clicked
+                download(url)
+            }
         }
     }
 
@@ -46,9 +52,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun download() {
+    private fun download(url: String) {
+        if (url.isEmpty()) {
+            Toast.makeText(this, getString(R.string.unselected_message), Toast.LENGTH_SHORT).show()
+            return
+        }
         val request =
-            DownloadManager.Request(Uri.parse(URL))
+            DownloadManager.Request(Uri.parse(url))
                 .setTitle(getString(R.string.app_name))
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)
@@ -60,9 +70,33 @@ class MainActivity : AppCompatActivity() {
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
     }
 
+    fun onRadioButtonClicked(view: View) {
+        if (view is RadioButton) {
+            val checked = view.isChecked
+
+            when (view.getId()) {
+                R.id.radio_glide ->
+                    if (checked) {
+                        url = GLIDE_URL
+                    }
+                R.id.radio_app ->
+                    if (checked) {
+                        url = APP_URL
+                    }
+                R.id.radio_retrofit -> {
+                    if (checked) {
+                        url = RETROFIT_URL
+                    }
+                }
+            }
+        }
+    }
+
     companion object {
-        private const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        private const val GLIDE_URL = "https://github.com/bumptech/glide"
+        private const val APP_URL =
+            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter"
+        private const val RETROFIT_URL = "https://github.com/square/retrofit"
         private const val CHANNEL_ID = "channelId"
     }
 

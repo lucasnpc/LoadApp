@@ -7,10 +7,11 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layoutDescription="@xml/content_main_scene"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context=".MainActivity"
         tools:showIn="@layout/activity_main">
@@ -26,25 +27,28 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <RadioButton
-                android:id="@+id/glide"
+                android:id="@+id/radio_glide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
                 android:padding="@dimen/padding_8"
                 android:text="@string/glide_description"
                 android:textSize="@dimen/default_text_size" />
 
             <RadioButton
-                android:id="@+id/loadapp"
+                android:id="@+id/radio_app"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
                 android:padding="@dimen/padding_8"
                 android:text="@string/loadapp_description"
                 android:textSize="@dimen/default_text_size" />
 
             <RadioButton
-                android:id="@+id/retrofit"
+                android:id="@+id/radio_retrofit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
                 android:padding="@dimen/padding_8"
                 android:text="@string/retrofit_description"
                 android:textSize="@dimen/default_text_size" />
@@ -65,5 +69,5 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/downloads_rg" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>
