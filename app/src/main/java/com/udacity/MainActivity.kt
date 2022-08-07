@@ -38,10 +38,16 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        binding.contentMain.customButton.let { button ->
-            button.setOnClickListener {
-                button.buttonState = ButtonState.Clicked
-                download(url)
+        with(binding.contentMain) {
+            customButton.buttonState.observe(this@MainActivity) { state ->
+                when (state) {
+                    ButtonState.Completed -> {}
+                    ButtonState.Loading -> {}
+                    ButtonState.Clicked -> {
+                        download(url)
+                        customButton.buttonDelegateState = state
+                    }
+                }
             }
         }
     }
