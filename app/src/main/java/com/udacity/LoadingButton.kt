@@ -26,20 +26,24 @@ class LoadingButton @JvmOverloads constructor(
         isAntiAlias = true
         strokeWidth = resources.getDimension(R.dimen.stroke_width)
     }
-    private val rect: RectF = RectF(0f, 0f, 0f, 0f)
     private var currentAngle = 0
     private val clipRectRight = resources.getDimension(R.dimen.clipRectRight)
     private val clipRectBottom = resources.getDimension(R.dimen.clipRectBottom)
     private val clipRectTop = resources.getDimension(R.dimen.clipRectTop)
     private val clipRectLeft = resources.getDimension(R.dimen.clipRectLeft)
+    private val rect: RectF = RectF(clipRectLeft, clipRectTop, clipRectRight, clipRectBottom)
+
+    private val circleX = resources.getDimension(R.dimen.rectInset)
+    private val circleY = resources.getDimension(R.dimen.rowInset)
 
     private val _buttonState = MutableLiveData<ButtonState>(ButtonState.Completed)
     val buttonState: LiveData<ButtonState> = _buttonState
 
-    var buttonDelegateState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
+    var buttonDelegateState: ButtonState by Delegates.observable(ButtonState.Completed) { _, _, new ->
         when (new) {
             ButtonState.Clicked -> {
                 startAnimation()
+                this.text = context.getString(R.string.button_loading)
             }
             ButtonState.Loading -> {}
             ButtonState.Completed -> {}
@@ -55,13 +59,16 @@ class LoadingButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        canvas.translate(circleX, circleY)
+        canvas.clipRect(clipRectLeft, clipRectTop, clipRectRight, clipRectBottom)
         paint.color = ContextCompat.getColor(context, R.color.colorAccent)
-        canvas.drawArc(rect, 100f, currentAngle.toFloat(), false, paint)
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        rect.set(w.toFloat() -100f, 0f, w.toFloat() - 200f, h.toFloat())
+        canvas.drawArc(
+            rect,
+            0f,
+            currentAngle.toFloat(),
+            true,
+            paint
+        )
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -84,7 +91,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private fun startAnimation() {
         valueAnimator.cancel()
-        valueAnimator = ValueAnimator.ofInt(0, -360).apply {
+        valueAnimator = ValueAnimator.ofInt(0, 360).apply {
             duration = 2000
             interpolator = LinearInterpolator()
             addUpdateListener { valueAnimator ->

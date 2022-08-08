@@ -6,10 +6,10 @@
     <dimen name="margin_24">24dp</dimen>
     <dimen name="padding_8">8dp</dimen>
     <dimen name="stroke_width">4dp</dimen>
-    <dimen name="clipRectRight">90dp</dimen>
-    <dimen name="clipRectBottom">90dp</dimen>
+    <dimen name="clipRectRight">30dp</dimen>
+    <dimen name="clipRectBottom">30dp</dimen>
     <dimen name="clipRectTop">0dp</dimen>
     <dimen name="clipRectLeft">0dp</dimen>
-    <dimen name="rectInset">8dp</dimen>
-    <dimen name="smallRectOffset">40dp</dimen>
+    <dimen name="rectInset">250dp</dimen>
+    <dimen name="rowInset">16dp</dimen>
 </resources>
