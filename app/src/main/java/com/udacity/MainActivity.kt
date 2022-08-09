@@ -23,7 +23,11 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private var downloadID: Long = 0
+    private var downloadID: Pair<Long, String> = Pair(0, "")
+    private val downloadManager by lazy {
+        getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+    }
+
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
@@ -55,6 +59,19 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            if (downloadID.first == id)
+                when (downloadID.second) {
+                    GLIDE_URL -> {
+                        println("Glide")
+                    }
+                    RETROFIT_URL -> {
+                        println("Retrofit")
+                    }
+                    APP_URL -> {
+                        println("App")
+                    }
+                }
+
         }
     }
 
@@ -71,9 +88,8 @@ class MainActivity : AppCompatActivity() {
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
 
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        downloadID =
-            downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+        downloadID = Pair(downloadManager.enqueue(request), url)
+        // enqueue puts the download request in the queue.
     }
 
     fun onRadioButtonClicked(view: View) {
