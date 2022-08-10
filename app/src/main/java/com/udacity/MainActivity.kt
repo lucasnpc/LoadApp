@@ -1,19 +1,21 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.udacity.databinding.ActivityMainBinding
 
 
@@ -28,10 +30,9 @@ class MainActivity : AppCompatActivity() {
         getSystemService(DOWNLOAD_SERVICE) as DownloadManager
     }
 
-
-    private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
+    private val notificationManager: NotificationManager by lazy {
+        ContextCompat.getSystemService(this, NotificationManager::class.java) as NotificationManager
+    }
 
     private var url = ""
 
@@ -54,24 +55,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        createChannel(getString(R.string.channel_id), getString(R.string.channel_name))
     }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            if (downloadID.first == id)
+            if (downloadID.first == id) {
+                notificationManager.cancelAll()
                 when (downloadID.second) {
                     GLIDE_URL -> {
-                        println("Glide")
+                        notificationManager.sendNotification(this@MainActivity)
                     }
                     RETROFIT_URL -> {
-                        println("Retrofit")
+                        notificationManager.sendNotification(this@MainActivity)
                     }
                     APP_URL -> {
-                        println("App")
+                        notificationManager.sendNotification(this@MainActivity)
                     }
                 }
-
+            }
         }
     }
 
@@ -89,7 +92,6 @@ class MainActivity : AppCompatActivity() {
                 .setAllowedOverRoaming(true)
 
         downloadID = Pair(downloadManager.enqueue(request), url)
-        // enqueue puts the download request in the queue.
     }
 
     fun onRadioButtonClicked(view: View) {
@@ -111,6 +113,24 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                enableLights(true)
+                lightColor = Color.RED
+                enableVibration(true)
+                description = "Download Finished"
+                setShowBadge(false)
+            }
+
+            notificationManager.createNotificationChannel(notificationChannel)
         }
     }
 
