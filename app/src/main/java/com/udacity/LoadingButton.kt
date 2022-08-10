@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
 import androidx.lifecycle.LiveData
@@ -46,7 +47,11 @@ class LoadingButton @JvmOverloads constructor(
                 this.text = context.getString(R.string.button_loading)
             }
             ButtonState.Loading -> {}
-            ButtonState.Completed -> {}
+            ButtonState.Completed -> {
+                this.text = context.getString(R.string.button_name)
+                currentAngle = 0
+                invalidate()
+            }
         }
     }
 
@@ -92,7 +97,7 @@ class LoadingButton @JvmOverloads constructor(
     private fun startAnimation() {
         valueAnimator.cancel()
         valueAnimator = ValueAnimator.ofInt(0, 360).apply {
-            duration = 2000
+            duration = ANIMATION_DURATION
             interpolator = LinearInterpolator()
             addUpdateListener { valueAnimator ->
                 currentAngle = valueAnimator.animatedValue as Int
@@ -100,5 +105,12 @@ class LoadingButton @JvmOverloads constructor(
             }
         }
         valueAnimator.start()
+        valueAnimator.doOnEnd {
+            _buttonState.value = ButtonState.Completed
+        }
+    }
+
+    private companion object {
+        const val ANIMATION_DURATION = 2500L
     }
 }

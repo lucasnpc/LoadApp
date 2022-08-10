@@ -26,7 +26,8 @@
     <Transition
         app:constraintSetEnd="@id/end"
         app:constraintSetStart="@+id/start"
-        app:duration="2000">
+        app:duration="2500"
+        app:layoutDuringTransition="callMeasure">
         <OnClick
             app:clickAction="toggle"
             app:targetId="@id/custom_button" />

@@ -46,7 +46,10 @@ class MainActivity : AppCompatActivity() {
         with(binding.contentMain) {
             customButton.buttonState.observe(this@MainActivity) { state ->
                 when (state) {
-                    ButtonState.Completed -> {}
+                    ButtonState.Completed -> {
+                        mainLayout.progress = 0F
+                        customButton.buttonDelegateState = state
+                    }
                     ButtonState.Loading -> {}
                     ButtonState.Clicked -> {
                         download(url)
@@ -61,20 +64,32 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            if (downloadID.first == id) {
-                notificationManager.cancelAll()
-                when (downloadID.second) {
-                    GLIDE_URL -> {
-                        notificationManager.sendNotification(this@MainActivity)
-                    }
-                    RETROFIT_URL -> {
-                        notificationManager.sendNotification(this@MainActivity)
-                    }
-                    APP_URL -> {
-                        notificationManager.sendNotification(this@MainActivity)
-                    }
+            val status = downloadID.first == id
+            notificationManager.cancelAll()
+            when (downloadID.second) {
+                GLIDE_URL -> {
+                    notificationManager.sendNotification(
+                        context = this@MainActivity,
+                        downloadStatus = status,
+                        urlDownloaded = getString(R.string.glide_description)
+                    )
+                }
+                RETROFIT_URL -> {
+                    notificationManager.sendNotification(
+                        this@MainActivity,
+                        downloadStatus = status,
+                        urlDownloaded = getString(R.string.retrofit_description)
+                    )
+                }
+                APP_URL -> {
+                    notificationManager.sendNotification(
+                        this@MainActivity,
+                        downloadStatus = status,
+                        urlDownloaded = getString(R.string.loadapp_description)
+                    )
                 }
             }
+
         }
     }
 
@@ -139,7 +154,8 @@ class MainActivity : AppCompatActivity() {
         private const val APP_URL =
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter"
         private const val RETROFIT_URL = "https://github.com/square/retrofit"
-        private const val CHANNEL_ID = "channelId"
+        const val DOWNLOAD_COMPLETED = "download_completed"
+        const val URL_DOWNLOADED = "url_downloaded"
     }
 
 }
